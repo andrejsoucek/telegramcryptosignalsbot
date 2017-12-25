@@ -1,0 +1,18 @@
+{
+  "name": "signalbot",
+  "version": "1.0.0",
+  "description": "Buying altcoins right after receiving a signal from Telegram group.",
+  "main": "main.js",
+  "dependencies": {
+    "node-bittrex-api": "^0.8.1",
+    "nodemon": "^1.14.3",
+    "simple-telegram": "0.0.15",
+    "twit": "^2.2.9"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Andrej Soucek andrejsoucek@seznam.cz",
+  "license": "ISC"
+}
