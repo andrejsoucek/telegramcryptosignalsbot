@@ -49,7 +49,7 @@ class bittrex {
                                         `Signalled price: ${price}, Current highest ask: ${highestAsk}`));
                                     return
                                 }
-                                // that.buy(highestAsk, currencyPair, currency);
+                                that.buy(highestAsk, currencyPair, currency);
                             } else {
                                 console.log(that.chalk.yellow("Asks are too high to buy for this price! Skipping this signal.",
                                     `Signalled price: ${price}, Current highest ask: ${highestAsk}`));
