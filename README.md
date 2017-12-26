@@ -4,6 +4,13 @@ Trading altcoins on Bittrex based on signals received on your Telegram.
 ## Pre-requisities
 The [simple-telegram](https://github.com/GuillermoPena/simple-telegram) library used in this project is based on [vysheng’s telegram-cli project](https://github.com/vysheng/tg). You have to install and configure this great project before using simple-telegram. You can obtain every info that you need in [vysheng’s repository](https://github.com/vysheng/tg).
 
+## Installation
+```
+git clone --recursive https://github.com/andrejsoucek/telegramcryptosignalsbot.git
+-- do the settings in main.js
+node main.js
+```
+
 ## Settings
 The initial settings is done through the parameters in main.js
 ### Telegram settings
@@ -27,10 +34,6 @@ const btcAmount = 0.01              // 0.01 BTC will be spend on every signal
 const highestMarkup = 1.008         // if the price will go higher than 0.8% before placing the order, the signal will be ignored
 const takeProfit = {10: 70, 20: 30} // 70% of coins will be sold with 10% profit, 30% will be sold with 20% profit - you can make more take-profit steps
 const closeTimeLimit = 90           // if the order is not closed (filled) after 90 second, it gets cancelled and the signal will be ignored
-```
-## Run
-```
-node main.js
 ```
 
 ## Donations
