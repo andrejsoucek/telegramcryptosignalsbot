@@ -51,8 +51,6 @@ function processSignal(s) {
         price = 0 + price
     }
     if (currency && price) {
-        console.log('currency', currency)
-        console.log("price", price)
         new Bittrex(API_KEY, SECRET, btcAmount, highestMarkup, takeProfit, closeTimeLimit)
             .checkBalancesAndBuy(currency, parseFloat(price))
     } else {

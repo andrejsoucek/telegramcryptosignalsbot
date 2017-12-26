@@ -34,16 +34,18 @@ class bittrex {
             if (data) {
                 if (data.result.Balance >= that.btcAmount) {
                     const currencyPair = `BTC-${currency}`;
-                    that.bittrex.getorderbook({ market : currencyPair, type : "sell"}, function( data, err ) {
+                    that.bittrex.getorderbook({ market : currencyPair, type : "both"}, function( data, err ) {
                         if (err) {
                             console.log("Order book error: " + err.message)
                         }
                         if (data) {
-                            const highestAsk = data.result[0].Rate;
+                            const highestAsk = data.result.sell[0].Rate;
                             const maxPrice = price*that.highestMarkup;
-                            console.log("highest", highestAsk)
-                            console.log("maxAllowed", maxPrice)
                             if (maxPrice > highestAsk) {
+                                if(!that.assertCoin(data.result.buy[0].Rate, maxPrice)) {
+                                    console.log("The coin price differs too much from the signalled price! Possibly mistaken signal. Skipping.")
+                                    return
+                                }
                                 that.buy(highestAsk, currencyPair, currency);
                             } else {
                                 console.log("Asks are too high to buy for this price! Skipping this signal.")
@@ -58,13 +60,24 @@ class bittrex {
     }
 
     /**
+     * Blind check if the signalled coin price is not mistaken
+     * Does not allow to trade the coin if its price is lower than markup
+     * True if the price seems ok, false if fail
+     * @param highestBid
+     * @param maxPrice
+     * @returns {boolean}
+     */
+    assertCoin(highestBid, maxPrice) {
+        return maxPrice / highestBid <= this.highestMarkup;
+    }
+
+    /**
      * Placing the buy order
      * @param buyPrice
      * @param currencyPair
      * @param currency
      */
     buy(buyPrice, currencyPair, currency) {
-        console.log(buyPrice)
         const that = this;
         const amount = this.btcAmount / buyPrice;
         console.log(`===== PLACING LIMIT BUY ORDER (${currencyPair}) =====`);
