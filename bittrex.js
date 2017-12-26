@@ -8,6 +8,7 @@ class bittrex {
      * @param closeTimeLimit time in seconds how long to wait for the order to be closed before closing manually (MAX 900)
      */
     constructor(API_KEY, SECRET, btcAmount, highestMarkup, takeProfit, closeTimeLimit) {
+        this.chalk = require('chalk');
         this.bittrex  = require('node-bittrex-api');
         this.bittrex.options({
             'apikey' : API_KEY,
@@ -29,31 +30,34 @@ class bittrex {
         const that = this;
         this.bittrex.getbalance({ currency : 'BTC' }, function( data, err ) {
             if (err) {
-                console.log("Balance retrieval error: " + err.message);
+                console.log(that.chalk.red("Balance retrieval error: " + err.message));
             }
             if (data) {
                 if (data.result.Balance >= that.btcAmount) {
                     const currencyPair = `BTC-${currency}`;
                     that.bittrex.getorderbook({ market : currencyPair, type : "both"}, function( data, err ) {
                         if (err) {
-                            console.log("Order book error: " + err.message)
+                            console.log(that.chalk.red("Order book error: " + err.message))
                         }
                         if (data) {
+                            console.log("Signal parsed, determining price, currency and amount...");
                             const highestAsk = data.result.sell[0].Rate;
                             const maxPrice = price*that.highestMarkup;
                             if (maxPrice > highestAsk) {
                                 if(!that.assertCoin(data.result.buy[0].Rate, maxPrice)) {
-                                    console.log("The coin price differs too much from the signalled price! Possibly mistaken signal. Skipping.")
+                                    console.log(that.chalk.yellow("The coin price differs too much from the signalled price! Possibly mistaken signal. Skipping.",
+                                        `Signalled price: ${price}, Current highest ask: ${highestAsk}`));
                                     return
                                 }
-                                that.buy(highestAsk, currencyPair, currency);
+                                // that.buy(highestAsk, currencyPair, currency);
                             } else {
-                                console.log("Asks are too high to buy for this price! Skipping this signal.")
+                                console.log(that.chalk.yellow("Asks are too high to buy for this price! Skipping this signal.",
+                                    `Signalled price: ${price}, Current highest ask: ${highestAsk}`));
                             }
                         }
                     });
                 } else {
-                    console.log("insufficient BTC")
+                    throw new Error("Insufficient BTC");
                 }
             }
         });
@@ -80,13 +84,13 @@ class bittrex {
     buy(buyPrice, currencyPair, currency) {
         const that = this;
         const amount = this.btcAmount / buyPrice;
-        console.log(`===== PLACING LIMIT BUY ORDER (${currencyPair}) =====`);
+        console.log(this.chalk.bgCyan(`===== PLACING LIMIT BUY ORDER (${currencyPair}) =====`));
         this.bittrex.buylimit({market : currencyPair, quantity : amount, rate : btcPrice}, function ( data, err ) {
             if (err) {
-                console.log("Order LIMIT BUY error: " + err.message);
+                console.log(that.chalk.red("Order LIMIT BUY error: " + err.message));
             }
             if (data) {
-                console.log(new Date() + ` Placed order for ${amount} of ${currency} | Rate: ${$buyPrice} | Total BTC: ${amount*buyPrice} BTC |ID: ${data.result.uuid}`);
+                console.log(that.chalk.green(new Date() + ` Placed order for ${amount} of ${currency} | Rate: ${$buyPrice} | Total BTC: ${amount*buyPrice} BTC |ID: ${data.result.uuid}`));
                 that.waitForClosing(data.result.uuid, buyPrice, currencyPair, currency);
             }
         });
@@ -104,7 +108,7 @@ class bittrex {
         const that = this;
         this.bittrex.getorder({ uuid : uuid }, function (data, err) {
             if (err) {
-                console.log("Order status error: " + err.message);
+                console.log(that.chalk.red("Order status error: " + err.message));
             }
             if (data) {
                 if (data.result.IsOpen === true && that.triesCounter < that.maxTries) {
@@ -127,13 +131,14 @@ class bittrex {
      * @param order
      */
     closeOrder(order) {
+        const that = this;
         console.log(`Cancelling order ${order.uuid}`)
         this.bittrex.cancel({ uuid: order.uuid }, function( data, err ) {
             if (err) {
-                console.log("Cancel order error: " + err.message);
+                console.log(that.chalk.red("Cancel order error: " + err.message));
             }
             if (data && data.success === true) {
-                console.log(`Cancelled order ID ${order.OrderUuid}: ${order.Type} ${order.Exchange}`)
+                console.log(that.chalk.green(`Cancelled order ID ${order.OrderUuid}: ${order.Type} ${order.Exchange}`));
             }
         })
     }
@@ -148,11 +153,11 @@ class bittrex {
         const that = this;
         this.bittrex.getbalance({ currency : currency }, function( data, err ) {
             if (err) {
-                console.log("Balance retrieval error: " + err.message);
+                console.log(that.chalk.red("Balance retrieval error: " + err.message));
             }
             if (data) {
                 const totalSellAmount = data.result.Balance;
-                console.log(`===== PLACING TAKE-PROFIT ORDERS (${currencyPair}) =====`);
+                console.log(that.chalk.bgCyan(`===== PLACING TAKE-PROFIT ORDERS (${currencyPair}) =====`));
                 const keys = Object.keys(that.takeProfit)
                 const last = keys[keys.length-1]
                 keys.forEach(function(k) {
@@ -178,12 +183,13 @@ class bittrex {
      * @param sellPrice
      */
     sell(currency, currencyPair, sellAmount, sellPrice) {
+        const that = this;
         this.bittrex.selllimit({market : currencyPair, quantity : sellAmount, rate : sellPrice}, function ( data, err ) {
             if (err) {
-                console.log("Order LIMIT SELL error: " + err.message);
+                console.log(that.chalk.red("Order LIMIT SELL error: " + err.message));
             }
             if (data) {
-                console.log(new Date() + ` Placed order to sell ${sellAmount} of ${currency} | Rate: ${sellPrice} | Total BTC: ${sellAmount*sellPrice} BTC | ID: ${data.result.uuid}`);
+                console.log(that.chalk.green(new Date() + ` Placed order to sell ${sellAmount} of ${currency} | Rate: ${sellPrice} | Total BTC: ${sellAmount*sellPrice} BTC | ID: ${data.result.uuid}`));
             }
         });
     }
@@ -198,7 +204,7 @@ class bittrex {
         const that = this;
         this.bittrex.getbalance({ currency : currency }, function( data, err ) {
             if (err) {
-                console.log("Balance retrieval error: " + err.message);
+                console.log(that.chalk.red("Balance retrieval error: " + err.message));
             }
             if (data) {
                 const totalSellAmount = data.result.Balance;

@@ -1,5 +1,6 @@
 const SimpleTelegram = require('./simple-telegram')
 const Bittrex = require('./bittrex')
+const chalk = require('chalk');
 const stg = new SimpleTelegram()
 
 /**
@@ -35,7 +36,7 @@ stg.create(tgBinFile, tgKeysFile)
 
 stg.getProcess().stdout.on("receivedMessage", function(msg) {
     if (isSignal(msg)) {
-        console.log("Received signal! Processing...")
+        console.log(chalk.blue.bold("Received signal! Processing..."))
         processSignal(msg.content)
     }
 })
@@ -54,7 +55,7 @@ function processSignal(s) {
         new Bittrex(API_KEY, SECRET, btcAmount, highestMarkup, takeProfit, closeTimeLimit)
             .checkBalancesAndBuy(currency, parseFloat(price))
     } else {
-        console.log("Could not find currency or price.")
+        console.log(chalk.red("Could not find currency or price. Skipping this signal."))
     }
 }
 
@@ -79,7 +80,7 @@ function assertSettings() {
         throw new Error("Please fill in the Bittrex API keys. Terminating...")
     }
     if (btcAmount > 0.5) {
-        console.log("WARNING: You are using a lot of money for altcoin trading. Supervising the bot is recommended.")
+        console.log(chalk.yellow("WARNING: You are using a lot of money for altcoin trading. Supervising the bot is recommended."))
     }
     if (highestMarkup > 1.1) {
         throw new Error("The markup is too high! Please set it to a lower value and try again. Terminating...")
@@ -92,7 +93,7 @@ function assertSettings() {
             throw new Error("The take-profit object has some values missing. Terminating...")
         }
         if (k > 50) {
-            console.log("WARNING: Your take-profit steps are set to over 50%.")
+            console.log(chalk.yellow("WARNING: Your take-profit steps are set to over 50%."))
         }
     })
     if (sum!=100) {
