@@ -3,11 +3,33 @@ Trading altcoins on Bittrex based on signals received on your Telegram.
 
 ## Pre-requisities
 The [simple-telegram](https://github.com/GuillermoPena/simple-telegram) library used in this project is based on [vysheng’s telegram-cli project](https://github.com/vysheng/tg). You have to install and configure this great project before using simple-telegram. You can obtain every info that you need in [vysheng’s repository](https://github.com/vysheng/tg).
+It is expected to have the "tg" folder inside this project root (you can change the path in the source):
+```
+. telegramcryptosignalsbot
+├── simple_telegram/
+├── tg/
+├── .gitignore
+├── bittrex.js
+├── main.js
+├── package.json
+├── README.md
+```
 
 ## Installation
+1. Clone this repo.
 ```
 git clone --recursive https://github.com/andrejsoucek/telegramcryptosignalsbot.git
--- do the settings in main.js
+```
+2. Install telegram-cli if not done yet.
+3. Install this project
+```
+cd simple-telegram
+npm install
+cd ..
+npm install
+```
+4. Run
+```
 node main.js
 ```
 
