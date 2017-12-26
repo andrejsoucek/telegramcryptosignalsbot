@@ -1,0 +1,41 @@
+{
+  "name": "simple-telegram",
+  "version": "0.0.15",
+  "description": "Simple wrapper to send and receive messages by Telegram",
+  "homepage": "http://github.com/GuillermoPena/simple-telegram",
+  "keywords": [
+    "telegram",
+    "telegram-cli"
+  ],
+  "author": {
+    "name": "Guillermo Peña",
+    "email": "guillermo.pena.cardano@gmail.com",
+    "url": "http://www.google.com/profiles/guillermo.pena.cardano"
+  },
+  "engines": {
+    "node": ">=0.12.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/GuillermoPena/simple-telegram.git"
+  },
+  "bugs": {
+    "url": "http://github.com/GuillermoPena/simple-telegram/issues/"
+  },
+  "directories": {
+    "test": "./test"
+  },
+  "files": [
+    "index.js",
+    "lib/"
+  ],
+  "licenses": [
+    {
+      "type": "Apache License, Version 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
+  "dependencies": {
+    "socket.io": ">=1.3.*"
+  }
+}

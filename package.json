@@ -6,13 +6,27 @@
   "dependencies": {
     "node-bittrex-api": "^0.8.1",
     "nodemon": "^1.14.3",
-    "simple-telegram": "0.0.15",
     "twit": "^2.2.9"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "homepage": "http://github.com/andrejsoucek/telegramcryptosignalsbot",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/andrejsoucek/telegramcryptosignalsbot.git"
+  },
+  "bugs": {
+    "url": "http://github.com/andrejsoucek/telegramcryptosignalsbot/issues/"
+  },
+  "keywords": [
+    "telegram",
+    "telegram-cli",
+    "crypto",
+    "bot",
+    "signals"
+  ],
   "author": "Andrej Soucek andrejsoucek@seznam.cz",
   "license": "ISC"
 }

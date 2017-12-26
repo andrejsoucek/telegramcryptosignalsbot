@@ -1,4 +1,4 @@
-const SimpleTelegram = require('simple-telegram')
+const SimpleTelegram = require('./simple-telegram')
 const Bittrex = require('./bittrex')
 const stg = new SimpleTelegram()
 
