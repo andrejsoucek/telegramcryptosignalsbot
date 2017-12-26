@@ -80,22 +80,27 @@ function SimpleTelegram() {
             var slicesA = message.split('»»»')
         }
         var slicesB = slicesA[0].split(']')
-        var caller  = slicesA[0].replace(slicesB[0],"").replace(']','')
-        var content = (slicesA.length > 1) ? slicesA[1] : null
+        var caller  = slicesA[0].replace(slicesB[0],"").replace(']','').trim()
+        var content = null
+        var cmd = null
+        var args = null
+        if (slicesA.length > 1) {
+            content = slicesA[1].trim()
 
-        // Extracting command
-        var command = slicesA[1].trim()
-        var slicesD = command.split(' ')
-        var cmd = slicesD[0]
+            // Extracting command
+            var command = slicesA[1].trim()
+            var slicesD = command.split(' ')
+            cmd = slicesD[0].trim()
 
-        // Extracting arguments
-        var args = command.replace(slicesD[0],"")
+            // Extracting arguments
+            args = command.replace(slicesD[0],"").trim()
+        }
 
         // Emitting event
-        parsedMessage = { "caller" : caller.trim()
-            , "content": content.trim()
-            , "command" : cmd.trim()
-            , "args" : args.trim()
+        parsedMessage = { "caller" : caller
+            , "content": content
+            , "command" : cmd
+            , "args" : args
         }
         // Emitting event to process command
         log('info', parsedMessage.caller + ' >>> Me : ' + parsedMessage.content)
