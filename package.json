@@ -4,6 +4,7 @@
   "description": "Buying altcoins right after receiving a signal from Telegram group.",
   "main": "main.js",
   "dependencies": {
+    "chalk": "^2.3.0",
     "node-bittrex-api": "^0.8.1",
     "nodemon": "^1.14.3",
     "twit": "^2.2.9"
