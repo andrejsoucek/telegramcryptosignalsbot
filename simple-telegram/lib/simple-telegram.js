@@ -97,15 +97,16 @@ function SimpleTelegram() {
             , "command" : cmd.trim()
             , "args" : args.trim()
         }
-
         // Emitting event to process command
         log('info', parsedMessage.caller + ' >>> Me : ' + parsedMessage.content)
-        telegramProcess.stdout.emit('receivedMessage', parsedMessage)
+        // fixing https://github.com/GuillermoPena/simple-telegram/issues/5 idk why it works this way
+        setTimeout(function() {
+            telegramProcess.stdout.emit('receivedMessage', parsedMessage)
+        }, 100)
     }
 
     // Run Telegram process
     var runTelegram = function() {
-
         var options = ['-Ck', tgKeysFile].concat(extraOptions)
         telegramProcess = require('child_process').execFile(tgBinFile, options)
         telegramProcess.stdout.on('data', receiveMessage) // Receiving message
