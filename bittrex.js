@@ -40,7 +40,7 @@ class bittrex {
                             console.log(that.chalk.red("Order book error: " + err.message))
                         }
                         if (data) {
-                            console.log("Signal parsed, determining price, currency and amount...");
+                            console.log("Signal parsed successfully, confirming...");
                             const highestAsk = data.result.sell[0].Rate;
                             const maxPrice = price*that.highestMarkup;
                             if (maxPrice > highestAsk) {

@@ -103,7 +103,7 @@ function SimpleTelegram() {
             , "args" : args
         }
         // Emitting event to process command
-        log('info', parsedMessage.caller + ' >>> Me : ' + parsedMessage.content)
+        // log('info', parsedMessage.caller + ' >>> Me : ' + parsedMessage.content)
         // fixing https://github.com/GuillermoPena/simple-telegram/issues/5 idk why it works this way
         setTimeout(function() {
             telegramProcess.stdout.emit('receivedMessage', parsedMessage)

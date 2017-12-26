@@ -36,7 +36,9 @@ stg.create(tgBinFile, tgKeysFile)
 
 stg.getProcess().stdout.on("receivedMessage", function(msg) {
     if (isSignal(msg)) {
+        console.log(chalk.inverse("=============================="))
         console.log(chalk.blue.bold("Received signal! Processing..."))
+        console.log(new Date() + " " + msg.caller + ": " + msg.content)
         processSignal(msg.content)
     }
 })
