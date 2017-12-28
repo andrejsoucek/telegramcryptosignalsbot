@@ -58,6 +58,13 @@ const takeProfit = {10: 70, 20: 30} // 70% of coins will be sold with 10% profit
 const closeTimeLimit = 90           // if the order is not closed (filled) after 90 second, it gets cancelled and the signal will be ignored
 ```
 
+## TODO
+Clean the repo, connect it with a fork of simple-telegram repo instead of using the raw folder
+Watch the price of bought coins tomake the take-profit orders conditional - the goal is to have stop-loss and take-profit orders opened automatically
+Config file
+More exchanges
+Easier installation
+
 ## Donations
 Feel free to send me a donation to one of these wallets:
 
