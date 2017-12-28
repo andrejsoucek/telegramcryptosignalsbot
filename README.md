@@ -46,7 +46,7 @@ const signalGroupRegexp = /Signals group/      // regexp for the group name to r
 const signalKeywordRegexp = /buy/              // regexp for filtering the signal
 const signalCurrencyRegexp = /^[\w]+/          // regexp to retrieve which coin is signalled to buy
 const signalPriceRegexp = /0?\.\d+/            // regexp to retrieve the signalled price which to buy for
-
+const skipKeywordRegexp = /risk/i              // regexp to filter signals, skipping the signal if the regexp matches
 ```
 ### Trades settings
 ```javascript
@@ -60,7 +60,7 @@ const closeTimeLimit = 90           // if the order is not closed (filled) after
 
 ## TODO
 Clean the repo, connect it with a fork of simple-telegram repo instead of using the raw folder
-Watch the price of bought coins tomake the take-profit orders conditional - the goal is to have stop-loss and take-profit orders opened automatically
+Watch the price of bought coins to make the take-profit orders conditional - the goal is to have stop-loss and take-profit orders opened automatically
 Config file
 More exchanges
 Easier installation

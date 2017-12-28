@@ -30,6 +30,7 @@ const signalGroupRegexp = /Signals group/
 const signalKeywordRegexp = /buy/
 const signalCurrencyRegexp = /^[\w]+/
 const signalPriceRegexp = /0?\.\d+/
+const skipKeywordRegexp = /risk/i
 
 // Creating simpleTelegram object
 stg.create(tgBinFile, tgKeysFile)
@@ -39,6 +40,9 @@ stg.getProcess().stdout.on("receivedMessage", function(msg) {
         console.log(chalk.inverse("=============================="))
         console.log(chalk.blue.bold("Received signal! Processing..."))
         console.log(new Date() + " " + msg.caller + ": " + msg.content)
+        if (skipSignal(msg.content)) {
+            console.log(chalk.blue("Regexp found a skip keyword. Skipping this signal."))
+        }
         processSignal(msg.content)
     }
 })
@@ -62,16 +66,21 @@ function processSignal(s) {
 }
 
 /**
+ * Checks if the message matches the skipKeywordRegexp or not
+ * @param s
+ * @returns {boolean}
+ */
+function skipSignal(s) {
+    return !!s.match(skipKeywordRegexp)
+}
+
+/**
  * Checks if the message is a signal or not
  * @param msg
  * @returns {boolean}
  */
 function isSignal(msg) {
-    if (msg.caller.match(signalGroupRegexp) && msg.content.match(signalKeywordRegexp)) {
-        return true
-    } else {
-        return false
-    }
+    return !!(msg.caller.match(signalGroupRegexp) && msg.content.match(signalKeywordRegexp));
 }
 
 /**
