@@ -27,6 +27,7 @@ class bittrex {
      * @param price
      */
     checkBalancesAndBuy(currency, price) {
+        console.log("Signal parsed successfully, confirming...");
         const that = this;
         this.bittrex.getbalance({ currency : 'BTC' }, function( data, err ) {
             if (err) {
@@ -40,19 +41,20 @@ class bittrex {
                             console.log(that.chalk.red("Order book error: " + err.message))
                         }
                         if (data) {
-                            console.log("Signal parsed successfully, confirming...");
                             const highestAsk = data.result.sell[0].Rate;
+                            const highestBid = data.result.buy[0].Rate;
                             const maxPrice = price*that.highestMarkup;
                             if (maxPrice > highestAsk) {
-                                if(!that.assertCoin(data.result.buy[0].Rate, maxPrice)) {
+                                // if highestAsk is 5% higher than the signalled one, the order will not be placed
+                                if (bittrex.percentageChange(highestAsk, price) < -5) {
                                     console.log(that.chalk.yellow("The coin price differs too much from the signalled price! Possibly mistaken signal. Skipping.",
-                                        `Signalled price: ${price}, Current highest ask: ${highestAsk}`));
+                                        `Signalled price: ${price}, Current highest ask: ${highestAsk}, bid: ${highestBid}`));
                                     return
                                 }
                                 that.buy(highestAsk, currencyPair, currency);
                             } else {
                                 console.log(that.chalk.yellow("Asks are too high to buy for this price! Skipping this signal.",
-                                    `Signalled price: ${price}, Current highest ask: ${highestAsk}`));
+                                    `Signalled price: ${price}, max price: ${maxPrice}. Current highest ask: ${highestAsk}, bid: ${highestBid}`));
                             }
                         }
                     });
@@ -64,15 +66,14 @@ class bittrex {
     }
 
     /**
-     * Blind check if the signalled coin price is not mistaken
-     * Does not allow to trade the coin if its price is lower than markup
-     * True if the price seems ok, false if fail
-     * @param highestBid
-     * @param maxPrice
-     * @returns {boolean}
+     * For blind check if the signalled coin price is not mistaken
+     * Returns price difference in %
+     * @param highestAsk
+     * @param price
+     * @returns {number}
      */
-    assertCoin(highestBid, maxPrice) {
-        return maxPrice / highestBid <= this.highestMarkup;
+    static percentageChange(highestAsk, price) {
+        return (highestAsk - price)/price*100;
     }
 
     /**
