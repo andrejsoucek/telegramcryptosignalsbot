@@ -18,9 +18,11 @@ It is expected to have the "tg" folder inside this project root (you can change 
 ## Installation
 1. Clone this repo.
 ```
-git clone --recursive https://github.com/andrejsoucek/telegramcryptosignalsbot.git
+git clone https://github.com/andrejsoucek/telegramcryptosignalsbot.git
 ```
 2. Install telegram-cli if not done yet.
+I recommend to use https://github.com/TehDmitry/tg-cli fork of the original telegram-cli. It supports large groups.
+To install it you will need to edit a file in tgl lib because of an OpenSSL API change. This is the change you need to do: [commit ffb04a](https://github.com/matthiasbock/tgl/commit/475855bd74dce27b6bacd0ded13df0643722075b)
 3. Install this project
 ```
 cd simple-telegram
