@@ -86,12 +86,12 @@ class bittrex {
         const that = this;
         const amount = this.btcAmount / buyPrice;
         console.log(this.chalk.bgCyan(`===== PLACING LIMIT BUY ORDER (${currencyPair}) =====`));
-        this.bittrex.buylimit({market : currencyPair, quantity : amount, rate : btcPrice}, function ( data, err ) {
+        this.bittrex.buylimit({market : currencyPair, quantity : amount, rate : buyPrice}, function ( data, err ) {
             if (err) {
                 console.log(that.chalk.red("Order LIMIT BUY error: " + err.message));
             }
             if (data) {
-                console.log(that.chalk.green(new Date() + ` Placed order for ${amount} of ${currency} | Rate: ${$buyPrice} | Total BTC: ${amount*buyPrice} BTC |ID: ${data.result.uuid}`));
+                console.log(that.chalk.green(new Date() + ` Placed order for ${amount} of ${currency} | Rate: ${buyPrice} | Total BTC: ${amount*buyPrice} BTC |ID: ${data.result.uuid}`));
                 that.waitForClosing(data.result.uuid, buyPrice, currencyPair, currency);
             }
         });
@@ -118,6 +118,7 @@ class bittrex {
                         that.waitForClosing(uuid, buyPrice, currencyPair, currency);
                     }, 10000);
                 } else if (data.result.IsOpen === true && that.triesCounter >= that.maxTries) {
+                    console.log(new Date() + ` Order not filled within ${that.closeTimeLimit}. Closing...`)
                     that.closeOrder(data.result)
                 } else if (data.result.IsOpen === false) {
                     that.checkBalanceAndSell(buyPrice, currencyPair, currency);
