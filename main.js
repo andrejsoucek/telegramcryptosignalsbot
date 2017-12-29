@@ -87,7 +87,7 @@ function isSignal(msg) {
  * Checks if the settings are correct.
  */
 function assertSettings() {
-    if (API_KEY.length <= 0 || SECRET <= 0) {
+    if (API_KEY.length <= 0 || SECRET.length <= 0) {
         throw new Error("Please fill in the Bittrex API keys. Terminating...")
     }
     if (btcAmount > 0.5) {
