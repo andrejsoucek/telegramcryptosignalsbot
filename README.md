@@ -56,16 +56,17 @@ const API_KEY = 'BITTREX API KEY'
 const SECRET = 'BITTREX SECRET'
 const btcAmount = 0.01              // 0.01 BTC will be spend on every signal
 const highestMarkup = 1.008         // if the price will go higher than 0.8% before placing the order, the signal will be ignored
-const takeProfit = {10: 70, 20: 30} // 70% of coins will be sold with 10% profit, 30% will be sold with 20% profit - you can make more take-profit steps
+const takeProfit = {10: 70, 20: 30} // 70% of coins will be sold with 10% profit, 30% will be sold with 20% profit - you can make more take-profit steps (empty object = no sell orders)
 const closeTimeLimit = 90           // if the order is not closed (filled) after 90 second, it gets cancelled and the signal will be ignored
 ```
 
 ## TODO
-Clean the repo, connect it with a fork of simple-telegram repo instead of using the raw folder
-Watch the price of bought coins to make the take-profit orders conditional - the goal is to have stop-loss and take-profit orders opened automatically
-Config file
-More exchanges
-Easier installation
+* Clean the repo, connect it with a fork of simple-telegram repo instead of using the raw folder
+* Watch the price of bought coins to make the take-profit orders conditional - the goal is to have stop-loss and take-profit orders opened automatically
+* Push notifications (probably Pushbullet integration)
+* Config file
+* More exchanges
+* Easier installation
 
 ## Donations
 Feel free to send me a donation to one of these wallets:
