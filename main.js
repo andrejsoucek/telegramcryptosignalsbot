@@ -34,7 +34,7 @@ const skipKeywordRegexp = /risk/i
 
 // Creating simpleTelegram object
 stg.create(tgBinFile, tgKeysFile)
-
+stg.setTelegramDebugFile("telegram.log")
 stg.getProcess().stdout.on("receivedMessage", function(msg) {
     if (isSignal(msg)) {
         console.log(chalk.inverse("=============================="))
@@ -42,6 +42,7 @@ stg.getProcess().stdout.on("receivedMessage", function(msg) {
         console.log(new Date() + " " + msg.caller + ": " + msg.content)
         if (skipSignal(msg.content)) {
             console.log(chalk.blue("Regexp found a skip keyword. Skipping this signal."))
+            return
         }
         processSignal(msg.content)
     }
