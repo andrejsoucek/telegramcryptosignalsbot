@@ -213,7 +213,7 @@ class bittrex {
                 console.log(that.chalk.red("Balance retrieval error: " + err.message));
             }
             if (data) {
-                const totalSellAmount = data.result.Balance;
+                const totalSellAmount = data.result.Available;
                 that.sell(currency, currencyPair, totalSellAmount, sellPrice)
             }
         });
