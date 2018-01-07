@@ -121,7 +121,11 @@ class bittrex {
                     console.log(new Date() + ` Order not filled within ${that.closeTimeLimit}. Closing...`)
                     that.closeOrder(data.result)
                 } else if (data.result.IsOpen === false) {
-                    that.checkBalanceAndSell(buyPrice, currencyPair, currency);
+                    if (Object.keys(that.takeProfit).length > 0) {
+                        that.checkBalanceAndSell(buyPrice, currencyPair, currency);
+                    } else {
+                        console.log(that.chalk.green("Take profit settings empty, nothing to do, waiting for another signal..."))
+                    }
                 } else {
                     throw new Error("Unexpected state of order. Terminating...");
                 }
@@ -134,13 +138,13 @@ class bittrex {
      */
     closeOrder(order) {
         const that = this;
-        console.log(`Cancelling order ${order.uuid}`)
+        console.log(`Closing order ${order.uuid}`)
         this.bittrex.cancel({ uuid: order.uuid }, function( data, err ) {
             if (err) {
-                console.log(that.chalk.red("Cancel order error: " + err.message));
+                console.log(that.chalk.red("Close order error: " + err.message));
             }
             if (data && data.success === true) {
-                console.log(that.chalk.green(`Cancelled order ID ${order.OrderUuid}: ${order.Type} ${order.Exchange}`));
+                console.log(that.chalk.green(`Closed order ID ${order.OrderUuid}: ${order.Type} ${order.Exchange}`));
             }
         })
     }

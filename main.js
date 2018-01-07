@@ -97,19 +97,23 @@ function assertSettings() {
     if (highestMarkup > 1.1) {
         throw new Error("The markup is too high! Please set it to a lower value and try again. Terminating...")
     }
-    var sum = 0
-    Object.keys(takeProfit).forEach(function(k) {
-        if (takeProfit.hasOwnProperty(k)) {
-            sum += takeProfit[k];
-        } else {
-            throw new Error("The take-profit object has some values missing. Terminating...")
+    if (Object.keys(takeProfit).length > 0) {
+        var sum = 0
+        Object.keys(takeProfit).forEach(function(k) {
+            if (takeProfit.hasOwnProperty(k)) {
+                sum += takeProfit[k];
+            } else {
+                throw new Error("The take-profit object has some values missing. Terminating...")
+            }
+            if (k > 50) {
+                console.log(chalk.yellow("WARNING: Your take-profit steps are set to over 50%."))
+            }
+        })
+        if (sum!=100) {
+            throw new Error("The take-profit percentages must be set to give 100% together. Terminating...")
         }
-        if (k > 50) {
-            console.log(chalk.yellow("WARNING: Your take-profit steps are set to over 50%."))
-        }
-    })
-    if (sum!=100) {
-        throw new Error("The take-profit percentages must be set to give 100% together. Terminating...")
+    } else {
+        console.log(chalk.yellow("WARNING: The take-profit object is empty. Consider using it to automate the trading process."))
     }
     if (closeTimeLimit < 10 || closeTimeLimit > 900) {
         throw new Error("The close time limit must be between 10 and 900 seconds.")
