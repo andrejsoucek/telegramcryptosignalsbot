@@ -5,22 +5,11 @@ const config = require('config')
 const stg = new SimpleTelegram()
 
 /**
- * Bittrex settings
- * @see bittrex.js docs
+ * Configuration load and check
  */
 const trexCfg = config.get('Exchange').bittrex
-const API_KEY = trexCfg.apiKey
-const SECRET = trexCfg.apiSecret
-
-/**
- * Trading settings
- */
 const tradesCfg = config.get('Trading')
-const btcAmount = tradesCfg.btcAmount
-const highestMarkup = tradesCfg.highestMarkup
-const takeProfit = tradesCfg.takeProfit
-const closeTimeLimit = tradesCfg.closeTimeLimit
-assertSettings();
+assertSettings(trexCfg, tradesCfg);
 
 /**
  * Settings to correctly recognize the signal and find the currency+price
@@ -60,7 +49,7 @@ function processSignal(s) {
         price = 0 + price
     }
     if (currency && price) {
-        new Bittrex(API_KEY, SECRET, btcAmount, highestMarkup, takeProfit, closeTimeLimit)
+        new Bittrex(trexCfg, tradesCfg)
             .checkBalancesAndBuy(currency, parseFloat(price))
     } else {
         console.log(chalk.red("Could not find currency or price. Skipping this signal."))
@@ -88,21 +77,21 @@ function isSignal(msg) {
 /**
  * Checks if the settings are correct.
  */
-function assertSettings() {
-    if (API_KEY.length <= 0 || SECRET.length <= 0) {
+function assertSettings(trexCfg, tradesCfg) {
+    if (trexCfg.apiKey.length <= 0 || trexCfg.apiSecret.length <= 0) {
         throw new Error("Please fill in the Bittrex API keys. Terminating...")
     }
-    if (btcAmount > 0.5) {
+    if (tradesCfg.btcAmount > 0.5) {
         console.log(chalk.yellow("WARNING: You are using a lot of money for altcoin trading. Supervising the bot is recommended."))
     }
-    if (highestMarkup > 1.1) {
+    if (tradesCfg.highestMarkup > 1.1) {
         throw new Error("The markup is too high! Please set it to a lower value and try again. Terminating...")
     }
-    if (Object.keys(takeProfit).length > 0) {
+    if (Object.keys(tradesCfg.takeProfit).length > 0) {
         var sum = 0
-        Object.keys(takeProfit).forEach(function(k) {
-            if (takeProfit.hasOwnProperty(k)) {
-                sum += takeProfit[k];
+        Object.keys(tradesCfg.takeProfit).forEach(function(k) {
+            if (tradesCfg.takeProfit.hasOwnProperty(k)) {
+                sum += tradesCfg.takeProfit[k];
             } else {
                 throw new Error("The take-profit object has some values missing. Terminating...")
             }
@@ -116,7 +105,8 @@ function assertSettings() {
     } else {
         console.log(chalk.yellow("WARNING: The take-profit object is empty. Consider using it to automate the trading process."))
     }
-    if (closeTimeLimit < 10 || closeTimeLimit > 900) {
+    if (tradesCfg.closeTimeLimit < 10 || tradesCfg.closeTimeLimit > 900) {
         throw new Error("The close time limit must be between 10 and 900 seconds.")
     }
+    console.log("Settings checked!")
 }

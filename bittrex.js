@@ -1,23 +1,16 @@
 class bittrex {
-    /**
-     * @param API_KEY
-     * @param SECRET
-     * @param btcAmount how many BTC are u willing to spend on each signal
-     * @param highestMarkup what is the highest markup to the signal you are wiling to set as a bid
-     * @param takeProfit take-profit steps in percentages { profit : amount }
-     * @param closeTimeLimit time in seconds how long to wait for the order to be closed before closing manually (MAX 900)
-     */
-    constructor(API_KEY, SECRET, btcAmount, highestMarkup, takeProfit, closeTimeLimit) {
+
+    constructor(trexCfg, tradesCfg) {
         this.chalk = require('chalk');
         this.bittrex  = require('node-bittrex-api');
         this.bittrex.options({
-            'apikey' : API_KEY,
-            'apisecret' : SECRET
+            'apikey' : trexCfg.apiKey,
+            'apisecret' : trexCfg.apiSecret
         });
-        this.btcAmount = btcAmount;
-        this.highestMarkup = highestMarkup;
-        this.takeProfit = takeProfit;
-        this.maxTries = closeTimeLimit/10;
+        this.btcAmount = tradesCfg.btcAmount;
+        this.highestMarkup = tradesCfg.highestMarkup;
+        this.takeProfit = tradesCfg.takeProfit;
+        this.maxTries = tradesCfg.closeTimeLimit/10;
         this.triesCounter = 0;
     }
 
