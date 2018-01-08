@@ -82,12 +82,15 @@ The initial settings is done through the config/default.json file
 * closeTimeLimit - if the order is not closed (filled) within the time limit, it gets cancelled and the signal is ignored
 ### Signals settings
 #### regexp
--signal and attributes recognition
+signal and attributes recognition
+
+NOTE: Special characters need to be escaped to meet the JSON requirements!
 * group - regexp for the group name to read from
 * keyword - regexp for filtering the signal
 * coin - regexp to retrieve which coin is signalled to buy
 * price - regexp to retrieve the signalled price which to buy for
 * skipKeyword - regexp to filter signals, skipping the signal if the regexp matches (leave blank if you do not want to skip any signal)
+
 
 ## TODO
 * Clean the repo, connect it with a fork of simple-telegram repo instead of using the raw folder
