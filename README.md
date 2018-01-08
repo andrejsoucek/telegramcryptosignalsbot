@@ -6,11 +6,11 @@ The [simple-telegram](https://github.com/GuillermoPena/simple-telegram) library 
 It is expected to have the "tg" folder inside this project root (you can change the path in the source):
 ```
 . telegramcryptosignalsbot
+├── bittrex/
 ├── config/
 ├── simple_telegram/
 ├── tg/
 ├── .gitignore
-├── bittrex.js
 ├── main.js
 ├── package.json
 ├── README.md

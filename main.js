@@ -1,5 +1,7 @@
 const SimpleTelegram = require('./simple-telegram')
-const Bittrex = require('./bittrex')
+// const Bittrex = require('./bittrex')
+const WatchDog = require('./bittrex/watchdog')
+const Signal = require('./signal')
 const chalk = require('chalk')
 const config = require('config')
 const stg = new SimpleTelegram()
@@ -9,17 +11,20 @@ const stg = new SimpleTelegram()
  */
 const trexCfg = config.get('Exchange').bittrex
 const tradesCfg = config.get('Trading')
-assertSettings(trexCfg, tradesCfg);
+assertSettings(trexCfg, tradesCfg)
 
 /**
  * Settings to correctly recognize the signal and find the currency+price
  */
 const signalsRegexpCfg = config.get('Signals').regexp
 const signalGroupRegexp = new RegExp(signalsRegexpCfg.group)
-const signalKeywordRegexp = new RegExp(signalsRegexpCfg.keyword)
+const signalKeywordRegexp = new RegExp(signalsRegexpCfg.keyword, "i")
 const signalCoinRegexp = new RegExp(signalsRegexpCfg.coin)
 const signalPriceRegexp = new RegExp(signalsRegexpCfg.price)
 const skipKeywordRegexp = new RegExp(signalsRegexpCfg.skipKeyword, "i")
+
+// Creating watch dog
+const wd = new WatchDog(trexCfg, tradesCfg)
 
 // Creating simpleTelegram object
 const tgCfg = config.get('Telegram')
@@ -34,25 +39,25 @@ stg.getProcess().stdout.on("receivedMessage", function(msg) {
             console.log(chalk.blue("Regexp matched a skip keyword. Skipping this signal."))
             return
         }
-        processSignal(msg.content)
+        wd.processSignal(parseSignal(msg.content))
     }
 })
 
 /**
- * Extracting currency (BTC-XXX) and price and placing an order
+ * Extracting signalled coin (BTC-XXX) and price
  * @param s
  */
-function processSignal(s) {
-    const currency = s.match(signalCoinRegexp)[0]
+function parseSignal(s) {
+    const coin = s.match(signalCoinRegexp)[0]
     var price = s.match(signalPriceRegexp)[0]
     if (price.charAt(0) === ".") {
         price = 0 + price
     }
-    if (currency && price) {
-        new Bittrex(trexCfg, tradesCfg)
-            .checkBalancesAndBuy(currency, parseFloat(price))
+    if (coin && price) {
+        console.log("Signal parsed successfully...");
+        return new Signal(coin, parseFloat(price))
     } else {
-        console.log(chalk.red("Could not find currency or price. Skipping this signal."))
+        console.log(chalk.red("Could not find coin or price. Skipping this signal."))
     }
 }
 
@@ -108,5 +113,4 @@ function assertSettings(trexCfg, tradesCfg) {
     if (tradesCfg.closeTimeLimit < 10 || tradesCfg.closeTimeLimit > 900) {
         throw new Error("The close time limit must be between 10 and 900 seconds.")
     }
-    console.log("Settings checked!")
 }
