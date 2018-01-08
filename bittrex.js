@@ -52,7 +52,7 @@ class bittrex {
                         }
                     });
                 } else {
-                    throw new Error("Insufficient BTC");
+                    console.log(that.chalk.red(`Not enough funds. Cannot buy any ${currency}. Skipping this signal...`))
                 }
             }
         });
