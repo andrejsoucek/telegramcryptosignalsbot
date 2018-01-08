@@ -1,0 +1,27 @@
+{
+   "Telegram": {
+      "binFile": "tg/bin/telegram-cli",
+      "keysFile": "tg/tg-server.pub"
+   },
+   "Exchange": {
+      "bittrex": {
+         "apiKey": "",
+         "apiSecret": ""
+      }
+   },
+   "Trading": {
+      "btcAmount": 0.01,
+      "highestMarkup": 1.008,
+      "takeProfit": { "10": 70, "20": 30 },
+      "closeTimeLimit": 90
+   },
+   "Signals": {
+         "regexp": {
+            "group": "Signals group",
+            "keyword": "buy",
+            "coin": "^[\\w]+",
+            "price": "0?\\.\\d+",
+            "skipKeyword": "risk"
+         }
+   }
+}

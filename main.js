@@ -1,39 +1,40 @@
 const SimpleTelegram = require('./simple-telegram')
 const Bittrex = require('./bittrex')
-const chalk = require('chalk');
+const chalk = require('chalk')
+const config = require('config')
 const stg = new SimpleTelegram()
-
-/**
- * Paths to bin and keys file to correctly launch telegram-cli
- * @type {string}
- */
-const tgBinFile  = "tg/bin/telegram-cli"
-const tgKeysFile = "tg/tg-server.pub"
 
 /**
  * Bittrex settings
  * @see bittrex.js docs
  */
-const API_KEY = ''
-const SECRET = ''
-const btcAmount = 0.01
-const highestMarkup = 1.008
-const takeProfit = {10: 70, 20: 30}
-const closeTimeLimit = 90
+const trexCfg = config.get('Exchange').bittrex
+const API_KEY = trexCfg.apiKey
+const SECRET = trexCfg.apiSecret
+
+/**
+ * Trading settings
+ */
+const tradesCfg = config.get('Trading')
+const btcAmount = tradesCfg.btcAmount
+const highestMarkup = tradesCfg.highestMarkup
+const takeProfit = tradesCfg.takeProfit
+const closeTimeLimit = tradesCfg.closeTimeLimit
 assertSettings();
 
 /**
  * Settings to correctly recognize the signal and find the currency+price
- * @type {RegExp}
  */
-const signalGroupRegexp = /Signals group/
-const signalKeywordRegexp = /buy/
-const signalCurrencyRegexp = /^[\w]+/
-const signalPriceRegexp = /0?\.\d+/
-const skipKeywordRegexp = /risk/i
+const signalsRegexpCfg = config.get('Signals').regexp
+const signalGroupRegexp = new RegExp(signalsRegexpCfg.group)
+const signalKeywordRegexp = new RegExp(signalsRegexpCfg.keyword)
+const signalCoinRegexp = new RegExp(signalsRegexpCfg.coin)
+const signalPriceRegexp = new RegExp(signalsRegexpCfg.price)
+const skipKeywordRegexp = new RegExp(signalsRegexpCfg.skipKeyword, "i")
 
 // Creating simpleTelegram object
-stg.create(tgBinFile, tgKeysFile)
+const tgCfg = config.get('Telegram')
+stg.create(tgCfg.binFile, tgCfg.keysFile)
 stg.setTelegramDebugFile("telegram.log")
 stg.getProcess().stdout.on("receivedMessage", function(msg) {
     if (isSignal(msg)) {
@@ -41,7 +42,7 @@ stg.getProcess().stdout.on("receivedMessage", function(msg) {
         console.log(chalk.blue.bold("Received signal! Processing..."))
         console.log(new Date() + " " + msg.caller + ": " + msg.content)
         if (skipSignal(msg.content)) {
-            console.log(chalk.blue("Regexp found a skip keyword. Skipping this signal."))
+            console.log(chalk.blue("Regexp matched a skip keyword. Skipping this signal."))
             return
         }
         processSignal(msg.content)
@@ -53,7 +54,7 @@ stg.getProcess().stdout.on("receivedMessage", function(msg) {
  * @param s
  */
 function processSignal(s) {
-    const currency = s.match(signalCurrencyRegexp)[0]
+    const currency = s.match(signalCoinRegexp)[0]
     var price = s.match(signalPriceRegexp)[0]
     if (price.charAt(0) === ".") {
         price = 0 + price
