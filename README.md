@@ -1,37 +1,29 @@
 # Crypto signals trading bot
 Trading altcoins on Bittrex based on signals received on your Telegram.
 
-## Pre-requisities
-The [simple-telegram](https://github.com/GuillermoPena/simple-telegram) library used in this project is based on [vysheng’s telegram-cli project](https://github.com/vysheng/tg). You have to install and configure this great project before using simple-telegram. You can obtain every info that you need in [vysheng’s repository](https://github.com/vysheng/tg).
-It is expected to have the "tg" folder inside this project root (you can change the path in the source):
-```
-. telegramcryptosignalsbot
-├── bittrex/
-├── config/
-├── simple_telegram/
-├── tg/
-├── .gitignore
-├── main.js
-├── package.json
-├── README.md
-```
-
 ## Installation
-1. Clone this repo.
+1. Clone this repo incl. submodules.
 ```
-git clone https://github.com/andrejsoucek/telegramcryptosignalsbot.git
+git clone --recursive https://github.com/andrejsoucek/telegramcryptosignalsbot.git
 ```
-2. Install telegram-cli if not done yet.
-I recommend to use https://github.com/TehDmitry/tg-cli fork of the original telegram-cli. It supports large groups.
-To install it you will need to edit a file in tgl lib because of an OpenSSL API change. This is the change you need to do: [commit ffb04a](https://github.com/matthiasbock/tgl/commit/475855bd74dce27b6bacd0ded13df0643722075b)
-3. Install this project
+2. Install telegram-cli.
+```
+cd tg
+./configure && make
+bin/telegram-cli //try to run it and connect
+cd ..
+```
+3. Install simple-telegram
 ```
 cd simple-telegram
 npm install
 cd ..
+```
+4. Install this project
+```
 npm install
 ```
-4. Run
+5. Run
 ```
 node main.js
 ```
