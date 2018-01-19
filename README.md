@@ -85,11 +85,9 @@ NOTE: Special characters need to be escaped to meet the JSON requirements!
 
 
 ## TODO
-* Clean the repo, connect it with a fork of simple-telegram repo instead of using the raw folder
 * Watch the price of bought coins to make the take-profit orders conditional - the goal is to have stop-loss and take-profit orders opened automatically
 * Push notifications (probably Pushbullet integration)
 * More exchanges
-* Easier installation
 
 ## Donations
 Feel free to send me a donation to one of these wallets:
