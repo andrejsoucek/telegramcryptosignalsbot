@@ -1,3 +1,6 @@
 [submodule "tg"]
 	path = tg
 	url = https://github.com/andrejsoucek/tg.git
+[submodule "simple-telegram"]
+	path = simple-telegram
+	url = https://github.com/andrejsoucek/simple-telegram.git
