@@ -6,7 +6,8 @@
   "dependencies": {
     "chalk": "^2.3.0",
     "config": "^1.29.1",
-    "node-bittrex-api": "^0.8.1"
+    "node-bittrex-api": "^0.8.1",
+    "pushbullet": "^2.1.0"
   },
   "devDependencies": {},
   "scripts": {
