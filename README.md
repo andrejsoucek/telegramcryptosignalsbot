@@ -56,6 +56,11 @@ The initial settings is done through the config/default.json file
             "price": "0?\\.\\d+",
             "skipKeyword": "risk"
          }
+   },
+   "Pushbullet": {
+         "notify": false,
+         "accessToken": "",
+         "email": ""
    }
 }
 ```
@@ -82,11 +87,13 @@ NOTE: Special characters need to be escaped to meet the JSON requirements!
 * coin - regexp to retrieve which coin is signalled to buy
 * price - regexp to retrieve the signalled price which to buy for
 * skipKeyword - regexp to filter signals, skipping the signal if the regexp matches (leave blank if you do not want to skip any signal)
-
+### Pushbullet settings
+* notify - true if you wish to receive notifications
+* accessToken - Pushbullet access token from [Pushbullet settings](https://www.pushbullet.com/#settings/account)
+* email - email associated with Pushbullet account
 
 ## TODO
 * Watch the price of bought coins to make the take-profit orders conditional - the goal is to have stop-loss and take-profit orders opened automatically
-* Push notifications (probably Pushbullet integration)
 * More exchanges
 
 ## Donations
