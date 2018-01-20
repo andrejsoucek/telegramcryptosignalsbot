@@ -19,8 +19,11 @@ class buyer {
      */
     checkBalanceAndBuy(coin, price, onOrderFilled) {
 
-        const checkPriceAndBuy = function(result) {
-            if (result.Balance >= this.btcAmount) {
+        const checkPriceAndBuy = function(balance) {
+            if (this.btcAmount === "all") {
+                this.btcAmount = balance
+            }
+            if (balance >= this.btcAmount) {
                 const coinPair = `BTC-${coin}`;
                 this.bittrex.getorderbook({ market : coinPair, type : "both"}, (data, err) => {
                     if (err) {
@@ -110,7 +113,7 @@ class buyer {
                 log("ERROR", "Balance retrieval error: " + err.message)
             }
             if (data) {
-                checkPriceAndBuy(data.result)
+                checkPriceAndBuy(data.result.Balance)
             }
         });
     }

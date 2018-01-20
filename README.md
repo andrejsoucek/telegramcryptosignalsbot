@@ -73,7 +73,7 @@ The initial settings is done through the config/default.json file
 * apiKey - bittrex api key
 * apiSecret - bittrex api secret
 ### Trading settings
-* btcAmount - how much BTC will be spend on every signal
+* btcAmount - how much BTC will be spend on every signal (you can use a number or "all" if you wish to spend your whole balance)
 * highestMarkup - if the price is higher than {signalled price * highestMarkup} before placing the order, the signal will be ignored
 * takeProfit - { "X": Y } Y of coins will be sold at X profit, you can make more take-profit steps (empty object = no sell orders)
 * closeTimeLimit - if the order is not closed (filled) within the time limit, it gets cancelled and the signal is ignored

@@ -86,6 +86,9 @@ function assertSettings(trexCfg, tradesCfg, pbCfg) {
     if (trexCfg.apiKey.length <= 0 || trexCfg.apiSecret.length <= 0) {
         throw new Error("Please fill in the Bittrex API keys. Terminating...")
     }
+    if (tradesCfg.btcAmount === "all") {
+        log("WARNING", "You are using all of your BTC balance for altcoin trading. Supervising the bot is recommended.")
+    }
     if (tradesCfg.btcAmount > 0.5) {
         log("WARNING", "You are using a lot of money for altcoin trading. Supervising the bot is recommended.")
     }
