@@ -1,55 +1,55 @@
-const SimpleTelegram = require('./simple-telegram')
-const WatchDog = require('./bittrex/watchdog')
-const Signal = require('./signal')
-const log = require('./log')
-const config = require('config')
-const stg = new SimpleTelegram()
+const SimpleTelegram = require('./simple-telegram');
+const WatchDog = require('./bittrex/watchdog');
+const Signal = require('./signal');
+const log = require('./log');
+const config = require('config');
+const stg = new SimpleTelegram();
 
 /**
  * Configuration load and check
  */
-const trexCfg = config.get('Exchange').bittrex
-const tradesCfg = config.get('Trading')
-const pbCfg = config.get('Pushbullet')
-assertSettings(trexCfg, tradesCfg, pbCfg)
+const trexCfg = config.get('Exchange').bittrex;
+const tradesCfg = config.get('Trading');
+const pbCfg = config.get('Pushbullet');
+assertSettings(trexCfg, tradesCfg, pbCfg);
 
 /**
  * Settings to correctly recognize the signal and find the currency+price
  */
-const signalsRegexpCfg = config.get('Signals').regexp
-const signalGroupRegexp = new RegExp(signalsRegexpCfg.group)
-const signalKeywordRegexp = new RegExp(signalsRegexpCfg.keyword, "i")
-const signalCoinRegexp = new RegExp(signalsRegexpCfg.coin)
-const signalPriceRegexp = new RegExp(signalsRegexpCfg.price)
-const skipKeywordRegexp = new RegExp(signalsRegexpCfg.skipKeyword, "i")
+const signalsRegexpCfg = config.get('Signals').regexp;
+const signalGroupRegexp = new RegExp(signalsRegexpCfg.group);
+const signalKeywordRegexp = new RegExp(signalsRegexpCfg.keyword, "i");
+const signalCoinRegexp = new RegExp(signalsRegexpCfg.coin);
+const signalPriceRegexp = new RegExp(signalsRegexpCfg.price);
+const skipKeywordRegexp = new RegExp(signalsRegexpCfg.skipKeyword, "i");
 
 // Creating watch dog
-const wd = new WatchDog(trexCfg, tradesCfg)
+const wd = new WatchDog(trexCfg, tradesCfg);
 
 // Creating simpleTelegram object
-const tgCfg = config.get('Telegram')
-stg.create(tgCfg.binFile, tgCfg.keysFile)
-stg.setTelegramDebugFile("telegram.log")
+const tgCfg = config.get('Telegram');
+stg.create(tgCfg.binFile, tgCfg.keysFile);
+stg.setTelegramDebugFile("telegram.log");
 stg.getProcess().stdout.on("receivedMessage", function(msg) {
     if (isSignal(msg)) {
-        log("INFO", "==============================")
-        log("INFO", "Received signal! Processing...")
-        log("INFO", new Date() + " " + msg.caller + ": " + msg.content)
+        log("INFO", "==============================");
+        log("INFO", "Received signal! Processing...");
+        log("INFO", new Date() + " " + msg.caller + ": " + msg.content);
         if (skipSignal(msg.content)) {
-            log("WARNING", "Regexp matched a skip keyword. Skipping this signal.")
+            log("WARNING", "Regexp matched a skip keyword. Skipping this signal.");
             return
         }
         wd.processSignal(parseSignal(msg.content))
     }
-})
+});
 
 /**
  * Extracting signalled coin (BTC-XXX) and price
  * @param s
  */
 function parseSignal(s) {
-    const coin = s.match(signalCoinRegexp)[0]
-    var price = s.match(signalPriceRegexp)[0]
+    const coin = s.match(signalCoinRegexp)[0];
+    let price = s.match(signalPriceRegexp)[0];
     if (price.charAt(0) === ".") {
         price = 0 + price
     }
@@ -93,7 +93,7 @@ function assertSettings(trexCfg, tradesCfg, pbCfg) {
         throw new Error("The markup is too high! Please set it to a lower value and try again. Terminating...")
     }
     if (Object.keys(tradesCfg.takeProfit).length > 0) {
-        var sum = 0
+        let sum = 0;
         Object.keys(tradesCfg.takeProfit).forEach(function(k) {
             if (tradesCfg.takeProfit.hasOwnProperty(k)) {
                 sum += tradesCfg.takeProfit[k];
@@ -103,7 +103,7 @@ function assertSettings(trexCfg, tradesCfg, pbCfg) {
             if (k > 50) {
                 log("WARNING", "Your take-profit steps are set to over 50%.")
             }
-        })
+        });
         if (sum!=100) {
             throw new Error("The take-profit percentages must be set to give 100% together. Terminating...")
         }
@@ -126,6 +126,6 @@ function assertSettings(trexCfg, tradesCfg, pbCfg) {
 }
 
 function validateEmail(email) {
-    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
 }

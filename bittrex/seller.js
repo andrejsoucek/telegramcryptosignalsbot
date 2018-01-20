@@ -1,4 +1,4 @@
-const log = require('../log')
+const log = require('../log');
 
 class seller {
     constructor(bittrex) {
@@ -13,18 +13,55 @@ class seller {
      * @param takeProfit
      */
     checkBalanceAndSell(buyPrice, coinPair, coin, takeProfit) {
-        this.bittrex.getbalance({ currency : coin }, function( data, err ) {
+
+        /**
+         * Sell all of the current balance
+         * @param coin
+         * @param coinPair
+         * @param sellPrice
+         */
+        const sellAll = function(coin, coinPair, sellPrice) {
+            this.bittrex.getbalance({ currency : coin }, (data, err) => {
+                if (err) {
+                    log("ERROR", "Balance retrieval error: " + err.message)
+                }
+                if (data) {
+                    const totalSellAmount = data.result.Available;
+                    sell(coin, coinPair, totalSellAmount, sellPrice)
+                }
+            });
+        };
+
+        /**
+         * Sell given amount of given coins for given price
+         * @param coin
+         * @param coinPair
+         * @param sellAmount
+         * @param sellPrice
+         */
+        const sell = function(coin, coinPair, sellAmount, sellPrice) {
+            this.bittrex.selllimit({market : coinPair, quantity : sellAmount, rate : sellPrice}, (data, err) => {
+                if (err) {
+                    log("ERROR", "Order LIMIT SELL error: " + err.message)
+                }
+                if (data) {
+                    log("INFO", new Date() + ` Placed order to sell ${sellAmount} of ${coin} | Rate: ${sellPrice} | Total BTC: ${sellAmount*sellPrice} BTC | ID: ${data.result.uuid}`, true)
+                }
+            });
+        };
+
+        this.bittrex.getbalance({ currency : coin }, (data, err) => {
             if (err) {
                 log("ERROR", "Balance retrieval error: " + err.message)
             }
             if (data) {
                 const totalSellAmount = data.result.Balance;
-                log("INFO", `===== PLACING TAKE-PROFIT ORDERS (${coinPair}) =====`)
-                const keys = Object.keys(takeProfit)
-                const last = keys[keys.length-1]
+                log("INFO", `===== PLACING TAKE-PROFIT ORDERS (${coinPair}) =====`);
+                const keys = Object.keys(takeProfit);
+                const last = keys[keys.length-1];
                 keys.forEach(function(k) {
-                    let amountMultiplier = parseFloat(takeProfit[k]) / 100
-                    let priceMultiplier = 1 + parseFloat(k)/100
+                    let amountMultiplier = parseFloat(takeProfit[k]) / 100;
+                    let priceMultiplier = 1 + parseFloat(k)/100;
                     if (takeProfit.hasOwnProperty(k)) {
                         if (k===last) {
                             sellAll(coin, coinPair, buyPrice * priceMultiplier)
@@ -34,44 +71,8 @@ class seller {
                     }
                 })
             }
-        })
-
-        /**
-         * Sell given amount of given coins for given price
-         * @param coin
-         * @param coinPair
-         * @param sellAmount
-         * @param sellPrice
-         */
-        var sell = function(coin, coinPair, sellAmount, sellPrice) {
-            this.bittrex.selllimit({market : coinPair, quantity : sellAmount, rate : sellPrice}, function ( data, err ) {
-                if (err) {
-                    log("ERROR", "Order LIMIT SELL error: " + err.message)
-                }
-                if (data) {
-                    log("INFO", new Date() + ` Placed order to sell ${sellAmount} of ${coin} | Rate: ${sellPrice} | Total BTC: ${sellAmount*sellPrice} BTC | ID: ${data.result.uuid}`, true)
-                }
-            });
-        }
-
-        /**
-         * Sell all of the current balance
-         * @param coin
-         * @param coinPair
-         * @param sellPrice
-         */
-        var sellAll = function(coin, coinPair, sellPrice) {
-            this.bittrex.getbalance({ currency : coin }, function( data, err ) {
-                if (err) {
-                    log("ERROR", "Balance retrieval error: " + err.message)
-                }
-                if (data) {
-                    const totalSellAmount = data.result.Available;
-                    sell(coin, coinPair, totalSellAmount, sellPrice)
-                }
-            });
-        }
+        });
     }
 }
 
-module.exports = seller
+module.exports = seller;
