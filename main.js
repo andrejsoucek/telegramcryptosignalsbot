@@ -34,7 +34,7 @@ stg.getProcess().stdout.on("receivedMessage", function(msg) {
     if (isSignal(msg)) {
         log("INFO", "==============================");
         log("INFO", "Received signal! Processing...");
-        log("INFO", new Date() + " " + msg.caller + ": " + msg.content);
+        log("INFO", msg.caller + ": " + msg.content);
         if (skipSignal(msg.content)) {
             log("WARNING", "Regexp matched a skip keyword. Skipping this signal.");
             return

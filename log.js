@@ -1,20 +1,22 @@
 const chalk = require('chalk');
 const PushBullet = require('pushbullet');
 const config = require('config');
+const fs = require('fs');
 
 function log(type, message, push = false) {
+    const formattedMsg = `${new Date} | ${type}: ${message}`;
     switch(type) {
         case 'INFO':
-            console.log(chalk.blue("INFO: " + message));
+            console.log(chalk.blue(formattedMsg));
             break;
         case 'WARNING':
-            console.log(chalk.yellow("WARNING: " + message));
+            console.log(chalk.yellow(formattedMsg));
             break;
         case 'ERROR':
-            console.log(chalk.red("ERROR: " + message));
+            console.log(chalk.red(formattedMsg));
             break;
         default:
-            console.log("unknown");
+            console.log(formattedMsg);
             break;
     }
 
@@ -22,12 +24,14 @@ function log(type, message, push = false) {
     if (push && pbCfg.notify === true) {
         const pusher = new PushBullet(pbCfg.accessToken);
         const email = pbCfg.email;
-        pusher.note(email, "Signals Bot", message, function(error, response) {
+        pusher.note(email, "Signals Bot", formattedMsg, function(error, response) {
             if (error) {
                 console.log(chalk.red(error))
             }
         });
     }
+
+    fs.appendFileSync('bot.log', "\r\n" + formattedMsg)
 }
 
 module.exports = log;

@@ -76,11 +76,11 @@ class buyer {
                                 waitForClosing(uuid, buyPrice, coinPair, coin)
                             }, 10000)
                         } else if (data.result.IsOpen === true && that.triesCounter >= that.maxTries) {
-                            log("WARNING", new Date() + ` Order not filled within ${that.closeTimeLimit}. Closing...`, true);
+                            log("WARNING", ` Order not filled within ${that.closeTimeLimit}. Closing...`, true);
                             closeOrder(data.result)
                         } else if (data.result.IsOpen === false) {
                             if (Object.keys(that.takeProfit).length > 0) {
-                                log("INFO", new Date() + "Order filled.", true);
+                                log("INFO", "Order filled.", true);
                                 onOrderFilled(buyPrice, coinPair, coin, that.takeProfit);
                             } else {
                                 log("INFO", "Take profit settings empty, nothing to do, waiting for another signal...")
@@ -99,7 +99,7 @@ class buyer {
                     log("ERROR", "Order LIMIT BUY error: " + err.message)
                 }
                 if (data) {
-                    log("INFO", new Date() + ` Placed order to buy ${amount} of ${coin} | Rate: ${buyPrice} | Total BTC: ${amount*buyPrice} BTC | ID: ${data.result.uuid}`, true);
+                    log("INFO", ` Placed order to buy ${amount} of ${coin} | Rate: ${buyPrice} | Total BTC: ${amount*buyPrice} BTC | ID: ${data.result.uuid}`, true);
                     waitForClosing(data.result.uuid, buyPrice, coinPair, coin)
                 }
             });

@@ -45,7 +45,7 @@ class seller {
                     log("ERROR", "Order LIMIT SELL error: " + err.message)
                 }
                 if (data) {
-                    log("INFO", new Date() + ` Placed order to sell ${sellAmount} of ${coin} | Rate: ${sellPrice} | Total BTC: ${sellAmount*sellPrice} BTC | ID: ${data.result.uuid}`, true)
+                    log("INFO", ` Placed order to sell ${sellAmount} of ${coin} | Rate: ${sellPrice} | Total BTC: ${sellAmount*sellPrice} BTC | ID: ${data.result.uuid}`, true)
                 }
             });
         };
