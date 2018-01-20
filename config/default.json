@@ -23,5 +23,10 @@
             "price": "0?\\.\\d+",
             "skipKeyword": "risk"
          }
+   },
+   "Pushbullet": {
+      "notify": false,
+      "accessToken": "",
+      "email": ""
    }
 }

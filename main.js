@@ -1,8 +1,7 @@
 const SimpleTelegram = require('./simple-telegram')
-// const Bittrex = require('./bittrex')
 const WatchDog = require('./bittrex/watchdog')
 const Signal = require('./signal')
-const chalk = require('chalk')
+const log = require('./log')
 const config = require('config')
 const stg = new SimpleTelegram()
 
@@ -11,7 +10,8 @@ const stg = new SimpleTelegram()
  */
 const trexCfg = config.get('Exchange').bittrex
 const tradesCfg = config.get('Trading')
-assertSettings(trexCfg, tradesCfg)
+const pbCfg = config.get('Pushbullet')
+assertSettings(trexCfg, tradesCfg, pbCfg)
 
 /**
  * Settings to correctly recognize the signal and find the currency+price
@@ -32,11 +32,11 @@ stg.create(tgCfg.binFile, tgCfg.keysFile)
 stg.setTelegramDebugFile("telegram.log")
 stg.getProcess().stdout.on("receivedMessage", function(msg) {
     if (isSignal(msg)) {
-        console.log(chalk.inverse("=============================="))
-        console.log(chalk.blue.bold("Received signal! Processing..."))
-        console.log(new Date() + " " + msg.caller + ": " + msg.content)
+        log("INFO", "==============================")
+        log("INFO", "Received signal! Processing...")
+        log("INFO", new Date() + " " + msg.caller + ": " + msg.content)
         if (skipSignal(msg.content)) {
-            console.log(chalk.blue("Regexp matched a skip keyword. Skipping this signal."))
+            log("WARNING", "Regexp matched a skip keyword. Skipping this signal.")
             return
         }
         wd.processSignal(parseSignal(msg.content))
@@ -54,10 +54,10 @@ function parseSignal(s) {
         price = 0 + price
     }
     if (coin && price) {
-        console.log("Signal parsed successfully...");
+        log("INFO", "Signal parsed successfully...");
         return new Signal(coin, parseFloat(price))
     } else {
-        console.log(chalk.red("Could not find coin or price. Skipping this signal."))
+        log("ERROR", "Could not find coin or price. Skipping this signal.")
     }
 }
 
@@ -67,7 +67,7 @@ function parseSignal(s) {
  * @returns {boolean}
  */
 function skipSignal(s) {
-    return !!s.match(skipKeywordRegexp)
+    return skipKeywordRegexp.test(s)
 }
 
 /**
@@ -76,18 +76,18 @@ function skipSignal(s) {
  * @returns {boolean}
  */
 function isSignal(msg) {
-    return !!(msg.caller.match(signalGroupRegexp) && msg.content.match(signalKeywordRegexp));
+    return signalGroupRegexp.test(msg.caller.test) && signalKeywordRegexp.test(msg.content.test)
 }
 
 /**
  * Checks if the settings are correct.
  */
-function assertSettings(trexCfg, tradesCfg) {
+function assertSettings(trexCfg, tradesCfg, pbCfg) {
     if (trexCfg.apiKey.length <= 0 || trexCfg.apiSecret.length <= 0) {
         throw new Error("Please fill in the Bittrex API keys. Terminating...")
     }
     if (tradesCfg.btcAmount > 0.5) {
-        console.log(chalk.yellow("WARNING: You are using a lot of money for altcoin trading. Supervising the bot is recommended."))
+        log("WARNING", "You are using a lot of money for altcoin trading. Supervising the bot is recommended.")
     }
     if (tradesCfg.highestMarkup > 1.1) {
         throw new Error("The markup is too high! Please set it to a lower value and try again. Terminating...")
@@ -101,16 +101,31 @@ function assertSettings(trexCfg, tradesCfg) {
                 throw new Error("The take-profit object has some values missing. Terminating...")
             }
             if (k > 50) {
-                console.log(chalk.yellow("WARNING: Your take-profit steps are set to over 50%."))
+                log("WARNING", "Your take-profit steps are set to over 50%.")
             }
         })
         if (sum!=100) {
             throw new Error("The take-profit percentages must be set to give 100% together. Terminating...")
         }
     } else {
-        console.log(chalk.yellow("WARNING: The take-profit object is empty. Consider using it to automate the trading process."))
+        log("WARNING", "The take-profit object is empty. Consider using it to automate the trading process.")
     }
     if (tradesCfg.closeTimeLimit < 10 || tradesCfg.closeTimeLimit > 900) {
         throw new Error("The close time limit must be between 10 and 900 seconds.")
     }
+    if (pbCfg.notify === true) {
+        if (!pbCfg.accessToken.length > 0) {
+            throw new Error("The Pushbullet access token must be filled in order to receive notifications. Terminating...")
+        }
+        if (!validateEmail(pbCfg.email)) {
+            throw new Error("The Pushbullet email field needs to be filled correctly in order to receive notifications. Terminating...")
+        }
+    } else {
+        log("WARNING", "Pushbullet notifications are disabled. Consider using them to know what the bot is doing.")
+    }
+}
+
+function validateEmail(email) {
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    return re.test(email);
 }
