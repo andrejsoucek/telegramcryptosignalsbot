@@ -29,7 +29,7 @@ const wd = new WatchDog(trexCfg, tradesCfg);
 // Creating simpleTelegram object
 const tgCfg = config.get('Telegram');
 stg.create(tgCfg.binFile, tgCfg.keysFile);
-stg.setTelegramDebugFile("telegram.log");
+// stg.setTelegramDebugFile("telegram.log");
 stg.getProcess().stdout.on("receivedMessage", function(msg) {
     if (isSignal(msg)) {
         log("INFO", "==============================");
