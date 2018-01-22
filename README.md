@@ -54,8 +54,14 @@ The initial settings is done through the config/default.json file
          "regexp": {
             "group": "Signals group",
             "keyword": "buy",
-            "coin": "^[\\w]+",
-            "price": "0?\\.\\d+",
+            "coin": {
+                "regexp": "#([A-Z0-9]+)",
+                "capturingGroup": true
+             },
+             "price": {
+                "regexp": "Buy  (0.\\d+)",
+                "capturingGroup": true
+             },
             "skipKeyword": "risk"
          }
    },
@@ -86,8 +92,8 @@ signal and attributes recognition
 NOTE: Special characters need to be escaped to meet the JSON requirements!
 * group - regexp for the group name to read from
 * keyword - regexp for filtering the signal
-* coin - regexp to retrieve which coin is signalled to buy
-* price - regexp to retrieve the signalled price which to buy for
+* coin - regexp to retrieve which coin is signalled to buy, set capturingGroup to true (and use capturing group) if the coin needs to be extracted from the result
+* price - regexp to retrieve the signalled price which to buy for, set capturing group to true if the price needs to be extracted from the result
 * skipKeyword - regexp to filter signals, skipping the signal if the regexp matches (leave blank if you do not want to skip any signal)
 ### Pushbullet settings
 * notify - true if you wish to receive notifications
