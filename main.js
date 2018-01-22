@@ -19,8 +19,8 @@ assertSettings(trexCfg, tradesCfg, pbCfg);
 const signalsRegexpCfg = config.get('Signals').regexp;
 const signalGroupRegexp = new RegExp(signalsRegexpCfg.group);
 const signalKeywordRegexp = new RegExp(signalsRegexpCfg.keyword, "i");
-const signalCoinRegexp = new RegExp(signalsRegexpCfg.coin);
-const signalPriceRegexp = new RegExp(signalsRegexpCfg.price);
+const signalCoinRegexp = new RegExp(signalsRegexpCfg.coin.regexp);
+const signalPriceRegexp = new RegExp(signalsRegexpCfg.price.regexp);
 const skipKeywordRegexp = new RegExp(signalsRegexpCfg.skipKeyword, "i");
 
 // Creating watch dog
@@ -48,8 +48,8 @@ stg.getProcess().stdout.on("receivedMessage", function(msg) {
  * @param s
  */
 function parseSignal(s) {
-    const coin = s.match(signalCoinRegexp)[0];
-    let price = s.match(signalPriceRegexp)[0];
+    let price = signalsRegexpCfg.price.capturingGroup === true ? s.match(signalPriceRegexp)[1] : s.match(signalPriceRegexp)[0];
+    const coin = signalsRegexpCfg.coin.capturingGroup ===  true ? s.match(signalCoinRegexp)[1] : s.match(signalCoinRegexp)[0];
     if (price.charAt(0) === ".") {
         price = 0 + price
     }
@@ -76,7 +76,7 @@ function skipSignal(s) {
  * @returns {boolean}
  */
 function isSignal(msg) {
-    return signalGroupRegexp.test(msg.caller.test) && signalKeywordRegexp.test(msg.content.test)
+    return signalGroupRegexp.test(msg.caller) && signalKeywordRegexp.test(msg.content)
 }
 
 /**

@@ -19,8 +19,14 @@
          "regexp": {
             "group": "Signals group",
             "keyword": "buy",
-            "coin": "^[\\w]+",
-            "price": "0?\\.\\d+",
+            "coin": {
+               "regexp:": "^[\\w]+",
+               "capturingGroup": false
+            },
+            "price": {
+               "regexp": "0?\\.\\d+",
+               "capturingGroup": false
+            },
             "skipKeyword": "risk"
          }
    },
