@@ -29,13 +29,13 @@ const wd = new WatchDog(trexCfg, tradesCfg);
 // Creating simpleTelegram object
 const tgCfg = config.get('Telegram');
 stg.create(tgCfg.binFile, tgCfg.keysFile);
-// stg.setTelegramDebugFile("telegram.log");
+stg.setTelegramDebugFile("telegram.log");
 stg.getProcess().stdout.on("receivedMessage", function(msg) {
     if (isSignal(msg)) {
         log("INFO", "==============================");
         log("INFO", "Received signal! Processing...");
         log("INFO", msg.caller + ": " + msg.content);
-        if (skipSignal(msg.content)) {
+        if (signalsRegexpCfg.skipKeyword.length > 0 && skipSignal(msg.content)) {
             log("WARNING", "Regexp matched a skip keyword. Skipping this signal.");
             return
         }
