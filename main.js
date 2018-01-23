@@ -29,7 +29,7 @@ const wd = new WatchDog(trexCfg, tradesCfg);
 // Creating simpleTelegram object
 const tgCfg = config.get('Telegram');
 stg.create(tgCfg.binFile, tgCfg.keysFile);
-stg.setTelegramDebugFile("telegram.log");
+// stg.setTelegramDebugFile("telegram.log");
 stg.getProcess().stdout.on("receivedMessage", function(msg) {
     if (isSignal(msg)) {
         log("INFO", "==============================");
@@ -48,18 +48,21 @@ stg.getProcess().stdout.on("receivedMessage", function(msg) {
  * @param s
  */
 function parseSignal(s) {
-    let price = signalsRegexpCfg.price.capturingGroup === true ? s.match(signalPriceRegexp)[1] : s.match(signalPriceRegexp)[0];
-    const coin = signalsRegexpCfg.coin.capturingGroup ===  true ? s.match(signalCoinRegexp)[1] : s.match(signalCoinRegexp)[0];
-    if (price.charAt(0) === ".") {
-        price = 0 + price
-    }
-    if (coin && price) {
+    const matchPrice = s.match(signalPriceRegexp);
+    const matchCoin = s.match(signalCoinRegexp);
+    if (matchPrice && matchCoin) {
+        let price = signalsRegexpCfg.price.capturingGroup === true ? matchPrice[1] : matchPrice[0];
+        const coin = signalsRegexpCfg.coin.capturingGroup ===  true ? matchCoin[1] : matchCoin[0];
+        if (price.charAt(0) === ".") {
+            price = 0 + price
+        }
         log("INFO", "Signal parsed successfully...");
         return new Signal(coin, parseFloat(price))
     } else {
         log("ERROR", "Could not find coin or price. Skipping this signal.")
     }
 }
+
 
 /**
  * Checks if the message matches the skipKeywordRegexp or not
