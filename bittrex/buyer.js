@@ -19,13 +19,13 @@ class buyer {
      */
     checkBalanceAndBuy(coin, price, onOrderFilled) {
 
-        const checkPriceAndBuy = function(balance) {
-            if (this.btcAmount === "all") {
-                this.btcAmount = balance
+        const checkPriceAndBuy = function(self, balance) {
+            if (self.btcAmount === "all") {
+                self.btcAmount = balance
             }
-            if (balance >= this.btcAmount) {
+            if (balance >= self.btcAmount) {
                 const coinPair = `BTC-${coin}`;
-                this.bittrex.getorderbook({ market : coinPair, type : "both"}, (data, err) => {
+                self.bittrex.getorderbook({ market : coinPair, type : "both"}, (data, err) => {
                     if (err) {
                         log("ERROR", "Order book error: " + err.message)
                     }
@@ -41,7 +41,7 @@ class buyer {
                                 log("WARNING", `Signalled price: ${price}, Current lowest ask: ${lowestAsk}, highest bid: ${highestBid}`);
                                 return
                             }
-                            buy(lowestAsk, coinPair, coin)
+                            buy(self, lowestAsk, coinPair, coin)
                         } else {
                             log("WARNING", "Asks are too high to buy for this price! Skipping this signal.");
                             log("WARNING", `Signalled price: ${price}, max price: ${maxPrice}. Current lowest ask: ${lowestAsk}, highest bid: ${highestBid}`)
@@ -53,11 +53,10 @@ class buyer {
             }
         };
 
-        const buy = function(buyPrice, coinPair, coin) {
-            const that = this;
+        const buy = function(self, buyPrice, coinPair, coin) {
 
-            const closeOrder = function(order) {
-                that.bittrex.cancel({ uuid: order.uuid }, (data, err) => {
+            const closeOrder = function(self, order) {
+                self.bittrex.cancel({ uuid: order.uuid }, (data, err) => {
                     if (err) {
                         log("ERROR", "Close order error: " + err.message)
                     }
@@ -67,24 +66,24 @@ class buyer {
                 })
             };
 
-            const waitForClosing = function(uuid, buyPrice, coinPair, coin) {
-                that.bittrex.getorder({ uuid : uuid }, function (data, err) {
+            const waitForClosing = function(self, uuid, buyPrice, coinPair, coin) {
+                self.bittrex.getorder({ uuid : uuid }, function (data, err) {
                     if (err) {
                         log("WARNING", "Order status error: " + err.message)
                     }
                     if (data) {
-                        if (data.result.IsOpen === true && that.triesCounter < that.maxTries) {
+                        if (data.result.IsOpen === true && self.triesCounter < self.maxTries) {
                             setTimeout(function() {
-                                that.triesCounter++;
+                                self.triesCounter++;
                                 waitForClosing(uuid, buyPrice, coinPair, coin)
                             }, 10000)
-                        } else if (data.result.IsOpen === true && that.triesCounter >= that.maxTries) {
-                            log("WARNING", ` Order not filled within ${that.closeTimeLimit}. Closing...`, true);
-                            closeOrder(data.result)
+                        } else if (data.result.IsOpen === true && self.triesCounter >= self.maxTries) {
+                            log("WARNING", ` Order not filled within ${self.closeTimeLimit}. Closing...`, true);
+                            closeOrder(self, data.result)
                         } else if (data.result.IsOpen === false) {
-                            if (Object.keys(that.takeProfit).length > 0) {
+                            if (Object.keys(self.takeProfit).length > 0) {
                                 log("INFO", "Order filled.", true);
-                                onOrderFilled(buyPrice, coinPair, coin, that.takeProfit);
+                                onOrderFilled(buyPrice, coinPair, coin, self.takeProfit);
                             } else {
                                 log("INFO", "Take profit settings empty, nothing to do, waiting for another signal...")
                             }
@@ -95,25 +94,26 @@ class buyer {
                 })
             };
 
-            const amount = this.btcAmount / buyPrice;
+            const amount = self.btcAmount / buyPrice;
             log("INFO", `===== PLACING LIMIT BUY ORDER (${coinPair}) =====`);
-            this.bittrex.buylimit({market : coinPair, quantity : amount, rate : buyPrice}, (data, err) =>{
+            self.bittrex.buylimit({market : coinPair, quantity : amount, rate : buyPrice}, (data, err) =>{
                 if (err) {
                     log("ERROR", "Order LIMIT BUY error: " + err.message)
                 }
                 if (data) {
                     log("INFO", ` Placed order to buy ${amount} of ${coin} | Rate: ${buyPrice} | Total BTC: ${amount*buyPrice} BTC | ID: ${data.result.uuid}`, true);
-                    waitForClosing(data.result.uuid, buyPrice, coinPair, coin)
+                    waitForClosing(self, data.result.uuid, buyPrice, coinPair, coin)
                 }
             });
         };
 
+        const self = this;
         this.bittrex.getbalance({ currency : 'BTC' }, function( data, err ) {
             if (err) {
                 log("ERROR", "Balance retrieval error: " + err.message)
             }
             if (data) {
-                checkPriceAndBuy(data.result.Balance)
+                checkPriceAndBuy(self, data.result.Balance)
             }
         });
     }
