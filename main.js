@@ -33,19 +33,25 @@ stg.create(tgCfg.binFile, tgCfg.keysFile);
 stg.getProcess().stdout.on("receivedMessage", function(msg) {
     if (isSignal(msg)) {
         log("INFO", "==============================");
-        log("INFO", "Received signal! Processing...");
+        log("INFO", "Received potential signal! Processing...");
         log("INFO", msg.caller + ": " + msg.content);
         if (signalsRegexpCfg.skipKeyword.length > 0 && skipSignal(msg.content)) {
             log("WARNING", "Regexp matched a skip keyword. Skipping this signal.");
             return
         }
-        wd.processSignal(parseSignal(msg.content))
+        if (parseSignal(msg.content) === false) {
+            log("ERROR", "Could not find coin or price. Probably mistaken or not a signal at all. Waiting for another one.")
+        } else {
+            log("INFO", "Signal parsed successfully!");
+            wd.processSignal(signal)
+        }
     }
 });
 
 /**
  * Extracting signalled coin (BTC-XXX) and price
  * @param s
+ * @return Object|false
  */
 function parseSignal(s) {
     const matchPrice = s.match(signalPriceRegexp);
@@ -56,10 +62,9 @@ function parseSignal(s) {
         if (price.charAt(0) === ".") {
             price = 0 + price
         }
-        log("INFO", "Signal parsed successfully...");
         return new Signal(coin, parseFloat(price))
     } else {
-        log("ERROR", "Could not find coin or price. Skipping this signal.")
+        return false
     }
 }
 
