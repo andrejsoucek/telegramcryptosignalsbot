@@ -32,14 +32,12 @@ stg.create(tgCfg.binFile, tgCfg.keysFile);
 // stg.setTelegramDebugFile("telegram.log");
 stg.getProcess().stdout.on("receivedMessage", function(msg) {
     if (isSignal(msg)) {
-        log("INFO", "==============================");
-        log("INFO", "Received potential signal! Processing...");
-        log("INFO", msg.caller + ": " + msg.content);
         if (signalsRegexpCfg.skipKeyword.length > 0 && skipSignal(msg.content)) {
             log("WARNING", "Regexp matched a skip keyword. Skipping this signal.");
             return
         }
-        if (parseSignal(msg.content) === false) {
+        const signal = parseSignal(msg.content)
+        if (signal === false) {
             log("ERROR", "Could not find coin or price. Probably mistaken or not a signal at all. Waiting for another one.")
         } else {
             log("INFO", "Signal parsed successfully!");
@@ -84,7 +82,17 @@ function skipSignal(s) {
  * @returns {boolean}
  */
 function isSignal(msg) {
-    return signalGroupRegexp.test(msg.caller) && signalKeywordRegexp.test(msg.content)
+    if (signalGroupRegexp.test(msg.caller)) {
+        log("INFO", "Received message from signal group!");
+        log("INFO", msg.caller + ": " + msg.content);
+        if (signalKeywordRegexp.test(msg.content)) {
+            log("INFO", "Received potential signal! Processing...");
+            return true
+        } else {
+            log("ERROR", "The message does not contain the signal keyword.")
+        }
+    }
+    return false
 }
 
 /**
