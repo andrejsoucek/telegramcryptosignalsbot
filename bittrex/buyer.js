@@ -113,7 +113,7 @@ class buyer {
                 log("ERROR", "Balance retrieval error: " + err.message)
             }
             if (data) {
-                checkPriceAndBuy(self, data.result.Balance)
+                checkPriceAndBuy(self, data.result.Available)
             }
         });
     }
