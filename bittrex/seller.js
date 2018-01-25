@@ -40,12 +40,13 @@ class seller {
          * @param sellPrice
          */
         const sell = function(coin, coinPair, sellAmount, sellPrice) {
+            log("INFO", `Placing order to sell ${sellAmount} of ${coin} | Rate: ${sellPrice} | Total BTC: ${sellAmount*sellPrice} BTC`, true);
             this.bittrex.selllimit({market : coinPair, quantity : sellAmount, rate : sellPrice}, (data, err) => {
                 if (err) {
                     log("ERROR", "Order LIMIT SELL error: " + err.message)
                 }
                 if (data) {
-                    log("INFO", ` Placed order to sell ${sellAmount} of ${coin} | Rate: ${sellPrice} | Total BTC: ${sellAmount*sellPrice} BTC | ID: ${data.result.uuid}`, true)
+                    log("INFO", `Order placed successfully. ID: ${data.result.uuid}`, true)
                 }
             });
         };
@@ -56,7 +57,7 @@ class seller {
             }
             if (data) {
                 const totalSellAmount = data.result.Balance;
-                log("INFO", `===== PLACING TAKE-PROFIT ORDERS (${coinPair}) =====`);
+                log("INFO", `===== TAKE-PROFIT ORDERS (${coinPair}) =====`);
                 const keys = Object.keys(takeProfit);
                 const last = keys[keys.length-1];
                 keys.forEach(function(k) {

@@ -21,7 +21,7 @@ class buyer {
 
         const checkPriceAndBuy = function(self, balance) {
             if (self.btcAmount === "all") {
-                self.btcAmount = balance
+                self.btcAmount = balance*0.997
             }
             if (balance >= self.btcAmount) {
                 const coinPair = `BTC-${coin}`;
@@ -95,13 +95,13 @@ class buyer {
             };
 
             const amount = self.btcAmount / buyPrice;
-            log("INFO", `===== PLACING LIMIT BUY ORDER (${coinPair}) =====`);
+            log("INFO", `Placing order to buy ${amount} of ${coin} | Rate: ${buyPrice} | Total BTC: ${amount*buyPrice} BTC`, true);
             self.bittrex.buylimit({market : coinPair, quantity : amount, rate : buyPrice}, (data, err) =>{
                 if (err) {
                     log("ERROR", "Order LIMIT BUY error: " + err.message)
                 }
                 if (data) {
-                    log("INFO", ` Placed order to buy ${amount} of ${coin} | Rate: ${buyPrice} | Total BTC: ${amount*buyPrice} BTC | ID: ${data.result.uuid}`, true);
+                    log("INFO", `Order placed successfully. ID: ${data.result.uuid}`, true);
                     waitForClosing(self, data.result.uuid, buyPrice, coinPair, coin)
                 }
             });
