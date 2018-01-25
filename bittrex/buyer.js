@@ -32,7 +32,7 @@ class buyer {
                     if (data) {
                         const lowestAsk = data.result.sell[0].Rate;
                         const highestBid = data.result.buy[0].Rate;
-                        const maxPrice = price*this.highestMarkup;
+                        const maxPrice = price*self.highestMarkup;
                         if (maxPrice > lowestAsk) {
                             const percentageChange = (lowestAsk, price) => (lowestAsk - price) / price * 100;
                             // if lowestAsk is 5% lower than the signalled one, the order will not be placed
