@@ -75,11 +75,15 @@ class buyer {
                         if (data.result.IsOpen === true && self.triesCounter < self.maxTries) {
                             setTimeout(function() {
                                 self.triesCounter++;
-                                waitForClosing(uuid, buyPrice, coinPair, coin)
+                                waitForClosing(self, uuid, buyPrice, coinPair, coin)
                             }, 10000)
                         } else if (data.result.IsOpen === true && self.triesCounter >= self.maxTries) {
-                            log("WARNING", ` Order not filled within ${self.closeTimeLimit}. Closing...`, true);
-                            closeOrder(self, data.result)
+                            if (data.result.QuantityRemaining < data.result.Quantity) {
+                                onOrderFilled(buyPrice, coinPair, coin, self.takeProfit)
+                            } else {
+                                log("WARNING", `Order not filled within ${self.closeTimeLimit}. Closing...`, true);
+                                closeOrder(self, data.result)
+                            }
                         } else if (data.result.IsOpen === false) {
                             if (Object.keys(self.takeProfit).length > 0) {
                                 log("INFO", "Order filled.", true);
