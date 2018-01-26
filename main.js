@@ -30,7 +30,16 @@ const wd = new WatchDog(trexCfg, tradesCfg);
 const tgCfg = config.get('Telegram');
 stg.create(tgCfg.binFile, tgCfg.keysFile);
 // stg.setTelegramDebugFile("telegram.log");
-stg.getProcess().stdout.on("receivedMessage", function(msg) {
+function listen() {
+    stg.getProcess().stdout.on("receivedMessage", function(msg) {
+        processMessage(msg)
+    });
+    stg.getProcess().stdout.on("processEnded", function() {
+        setTimeout(listen, 2000)
+    });
+}
+
+function processMessage(msg) {
     if (isSignal(msg)) {
         if (signalsRegexpCfg.skipKeyword.length > 0 && skipSignal(msg.content)) {
             log("WARNING", "Regexp matched a skip keyword. Skipping this signal.");
@@ -44,7 +53,7 @@ stg.getProcess().stdout.on("receivedMessage", function(msg) {
             wd.processSignal(signal)
         }
     }
-});
+}
 
 /**
  * Extracting signalled coin (BTC-XXX) and price
@@ -148,3 +157,5 @@ function validateEmail(email) {
     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
 }
+
+listen(stg);
