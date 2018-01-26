@@ -87,7 +87,7 @@ class buyer {
                         } else if (data.result.IsOpen === false) {
                             if (Object.keys(self.takeProfit).length > 0) {
                                 log("INFO", "Order filled.", true);
-                                onOrderFilled(buyPrice, coinPair, coin, self.takeProfit);
+                                onOrderFilled(self.bittrex, buyPrice, coinPair, coin, self.takeProfit);
                             } else {
                                 log("INFO", "Take profit settings empty, nothing to do, waiting for another signal...")
                             }

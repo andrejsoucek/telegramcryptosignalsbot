@@ -15,12 +15,12 @@ class watchdog {
         const coin = signal.coin;
         const price = signal.price;
         const buyer = new Buyer(this.bittrex, this.tradesCfg);
-        buyer.checkBalanceAndBuy(coin, price, (buyPrice, coinPair, coin, takeProfit) => {
-            onOrderFilled(buyPrice, coinPair, coin, takeProfit)
+        buyer.checkBalanceAndBuy(coin, price, (bittrex, buyPrice, coinPair, coin, takeProfit) => {
+            onOrderFilled(bittrex, buyPrice, coinPair, coin, takeProfit)
         });
 
-        const onOrderFilled = function(buyPrice, coinPair, coin, takeProfit) {
-            const seller = new Seller(this.bittrex);
+        const onOrderFilled = function(bittrex, buyPrice, coinPair, coin, takeProfit) {
+            const seller = new Seller(bittrex);
             seller.checkBalanceAndSell(buyPrice, coinPair, coin, takeProfit)
         }
     }
