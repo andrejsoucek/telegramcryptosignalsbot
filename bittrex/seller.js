@@ -16,32 +16,34 @@ class seller {
 
         /**
          * Sell all of the current balance
+         * @param bittrex
          * @param coin
          * @param coinPair
          * @param sellPrice
          */
-        const sellAll = function(coin, coinPair, sellPrice) {
-            this.bittrex.getbalance({ currency : coin }, (data, err) => {
+        const sellAll = function(bittrex, coin, coinPair, sellPrice) {
+            bittrex.getbalance({ currency : coin }, (data, err) => {
                 if (err) {
                     log("ERROR", "Balance retrieval error: " + err.message)
                 }
                 if (data) {
                     const totalSellAmount = data.result.Available;
-                    sell(coin, coinPair, totalSellAmount, sellPrice)
+                    sell(bittrex, coin, coinPair, totalSellAmount, sellPrice)
                 }
             });
         };
 
         /**
          * Sell given amount of given coins for given price
+         * @param bittrex
          * @param coin
          * @param coinPair
          * @param sellAmount
          * @param sellPrice
          */
-        const sell = function(coin, coinPair, sellAmount, sellPrice) {
+        const sell = function(bittrex, coin, coinPair, sellAmount, sellPrice) {
             log("INFO", `Placing order to sell ${sellAmount} of ${coin} | Rate: ${sellPrice} | Total BTC: ${sellAmount*sellPrice} BTC`, true);
-            this.bittrex.selllimit({market : coinPair, quantity : sellAmount, rate : sellPrice}, (data, err) => {
+            bittrex.selllimit({market : coinPair, quantity : sellAmount, rate : sellPrice}, (data, err) => {
                 if (err) {
                     log("ERROR", "Order LIMIT SELL error: " + err.message)
                 }
@@ -51,7 +53,8 @@ class seller {
             });
         };
 
-        this.bittrex.getbalance({ currency : coin }, (data, err) => {
+        const bittrex = this.bittrex;
+        bittrex.getbalance({ currency : coin }, (data, err) => {
             if (err) {
                 log("ERROR", "Balance retrieval error: " + err.message)
             }
@@ -65,9 +68,9 @@ class seller {
                     let priceMultiplier = 1 + parseFloat(k)/100;
                     if (takeProfit.hasOwnProperty(k)) {
                         if (k===last) {
-                            sellAll(coin, coinPair, buyPrice * priceMultiplier)
+                            sellAll(bittrex, coin, coinPair, buyPrice * priceMultiplier)
                         } else {
-                            sell(coin, coinPair, totalSellAmount * amountMultiplier, buyPrice * priceMultiplier)
+                            sell(bittrex, coin, coinPair, totalSellAmount * amountMultiplier, buyPrice * priceMultiplier)
                         }
                     }
                 })
