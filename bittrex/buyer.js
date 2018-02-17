@@ -79,7 +79,7 @@ class buyer {
                             }, 10000)
                         } else if (data.result.IsOpen === true && self.triesCounter >= self.maxTries) {
                             if (data.result.QuantityRemaining < data.result.Quantity) {
-                                onOrderFilled(buyPrice, coinPair, coin, self.takeProfit)
+                                onOrderFilled(self.bittrex, buyPrice, coinPair, coin, self.takeProfit)
                             } else {
                                 log("WARNING", `Order not filled within ${self.closeTimeLimit}. Closing...`, true);
                                 closeOrder(self, data.result)
